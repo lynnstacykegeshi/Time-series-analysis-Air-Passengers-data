@@ -41,15 +41,22 @@ air_add<-log(air)
 plot(air_add)
 
 #Decompose additive
-air_dec_add <- decompose(air_add, "additive")
+air_dec_add <- decompose(air_add, "additive")#you can omit additive since the default of decompose function is additive
 plot(air_dec_add)
 
-plot(air_dec_add$figure,
+plot(air_dec_add$seasonal,
      type="b",
      xlab="Months",
      ylab="Seasonality Index",
-     col="red",
+     col="blue",
      las= 2)
+
+#Proof the Air Passengers data follows an multiplicative model
+new_air<-air_dec$seasonal*air_dec$trend*air_dec$random
+plot(new_air)
+lines(air,col="#FFA500")
+
+
 
 #######
 #Plot the original data ACF and PACF
