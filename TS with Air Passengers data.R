@@ -68,3 +68,45 @@ no_diff <- ndiffs(air)
 #Seasonality in the data
 isSeasonal(air, test="wo")
 no_diff_seas <- nsdiffs(air)
+#Functions to estimate the number of differences required to make a given time series stationary. nsdiffs estimates the number of seasonal differences necessary
+
+##Test for stationarity
+# If p<5%, adf (non-stationary) and kpss test (stationary)
+#Augmented Dickey Fuller Test is a unit root test, null hypothesis-non stationary and alternative hypothesis is stationary.
+#Weakness is you need to specify lag, if you don't specify lag results might be misleading
+adf.test(air)
+#Results: p-values is 0.01. 0.01<0.05, reject null hypothesis and conclude that series is stationary
+
+#####
+#AFT test while specifying lag we conclude that the TS is non stationary
+adf.test(air,k=12)
+
+#KPSS test, the null hypothesis is that the time series is stationary and the alternative hypothesis is that the TS is non stationary.
+kpss.test(air)
+#results 0.01<0.05, reject null hypothesis and conclude that the data is non stationary
+
+
+#How to difference data
+air_diff <- diff(air)
+ggtsdisplay(air_diff)
+
+#deSeasonalize the data
+air_seas <- diff(air, lag=12, differences=1)
+ggtsdisplay(air_seas)
+
+#Now test if TS is stationary
+adf.test(air_diff)
+kpss.test(air_diff)
+#Results of KPSS test after differencing , p-value=0.1, 0.1>0.05 and hence we fail to reject the null hypothesis and conclude that the data is stationary.
+ndiffs(air_diff)
+
+air_diff_dec <- decompose(air_diff, "multiplicative")
+
+plot(air_diff_dec$trend)
+
+#Difference and deseasonalize
+diff_seas <- air %>% 
+  diff(lag=12) %>% 
+  diff()
+dev.new()
+ggtsdisplay(diff_seas)
